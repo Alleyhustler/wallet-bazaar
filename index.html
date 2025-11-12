@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Bazaar - Underground Digital Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+        }
+
+        body {
+            background: #0a0806;
+            color: #c4b5a3;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background with image */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                url('bg.png') center/cover no-repeat,
+                radial-gradient(circle at 20% 30%, rgba(60, 40, 20, 0) 0%, transparent 50%);            z-index: -2;
+        }
+
+        .background::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 98%, rgba(139, 107, 61, 0.1) 100%),
+                linear-gradient(0deg, transparent 98%, rgba(139, 107, 61, 0.1) 100%);
+            background-size: 20px 20px;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Help Popup */
+        .help-popup {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .help-button {
+            background: rgba(20, 16, 12, 0.8);
+            border: 1px solid #8b6b3d;
+            color: #c4a76a;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .help-button:hover {
+            background: rgba(30, 24, 18, 0.9);
+            box-shadow: 0 0 10px rgba(139, 107, 61, 0.4);
+        }
+
+        .help-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 300px;
+            background: rgba(15, 12, 9, 0.95);
+            border: 1px solid #8b6b3d;
+            padding: 20px;
+            margin-top: 10px;
+            display: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .help-content h3 {
+            color: #c4a76a;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #3a2c1a;
+            padding-bottom: 8px;
+        }
+
+        .help-content p {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .help-content ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .help-content li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .help-content strong {
+            color: #c4a76a;
+        }
+
+        .help-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #8b6b3d;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Header styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: rgba(20, 16, 12, 0);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #8b6b3d, transparent);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 340px;
+            height: 340px;
+            margin-left: 260px;
+            background: 
+                url('a.png') center/contain no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: rotate 10s linear infinite;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #e8d9b5;
+            z-index: 1;
+            text-shadow: 0 0 10px rgba(232, 217, 181, 0.5);
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .title h1 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: #e8d9b5;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .title h1::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #8b6b3d, transparent);
+        }
+
+        .title p {
+            font-size: 0.9rem;
+            color: #a08c6c;
+            margin-top: 0.8rem;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        .twitter-link {
+            color: #8b6b3d;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .twitter-link:hover {
+            color: #c4a76a;
+            border: 1px solid #8b6b3d;
+            background: rgba(139, 107, 61, 0.1);
+        }
+
+        /* Main terminal */
+        .terminal {
+            background: 
+                linear-gradient(165deg, rgba(30, 24, 18, 0.9) 0%, rgba(20, 16, 12, 0.9) 100%);
+            border: 1px solid #3a2c1a;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: 
+                0 0 30px rgba(0, 0, 0, 0.5),
+                inset 0 0 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            backdrop-filter: blur(5px);
+        }
+
+        .terminal::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 98%, rgba(139, 107, 61, 0.1) 100%),
+                linear-gradient(0deg, transparent 98%, rgba(139, 107, 61, 0.1) 100%);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #3a2c1a;
+            background: rgba(15, 12, 9, 0.8);
+        }
+
+        .terminal-title {
+            font-size: 1.3rem;
+            color: #c4a76a;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+            color: #a08c6c;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #8b6b3d;
+            position: relative;
+        }
+
+        .status-dot::after {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: #8b6b3d;
+            animation: pulse 3s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.5); opacity: 0.2; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        /* Input section */
+        .input-section {
+            padding: 2rem;
+            border-bottom: 1px solid #3a2c1a;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 1rem;
+            color: #a08c6c;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .wallet-input {
+            flex: 1;
+            padding: 1.2rem 1.5rem;
+            background: rgba(10, 8, 6, 0.7);
+            border: 1px solid #3a2c1a;
+            color: #e8d9b5;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .wallet-input:focus {
+            outline: none;
+            border-color: #8b6b3d;
+            box-shadow: 0 0 10px rgba(139, 107, 61, 0.3);
+        }
+
+        .scan-button {
+            padding: 1.2rem 2.5rem;
+            background: linear-gradient(to bottom, #8b6b3d, #5c451f);
+            border: 1px solid #8b6b3d;
+            color: #e8d9b5;
+            font-weight: normal;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(232, 217, 181, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .scan-button:hover::before {
+            left: 100%;
+        }
+
+        .scan-button:hover {
+            background: linear-gradient(to bottom, #9b7b4d, #6c552f);
+            box-shadow: 0 0 15px rgba(139, 107, 61, 0.4);
+        }
+
+        .scan-button:active {
+            transform: translateY(1px);
+        }
+
+        /* Output section */
+        .output-section {
+            padding: 2rem;
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .scanning-animation {
+            display: none;
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #8b6b3d, transparent);
+            margin: 2rem 0;
+            animation: scan 3s infinite;
+            box-shadow: 0 0 10px rgba(139, 107, 61, 0.5);
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-40px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(240px); opacity: 0; }
+        }
+
+        .result {
+            display: none;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #3a2c1a;
+        }
+
+        .approved .result-header {
+            color: #8b6b3d;
+        }
+
+        .rejected .result-header {
+            color: #8b4513;
+        }
+
+        .result-content {
+            margin-bottom: 2rem;
+        }
+
+        .code {
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: rgba(10, 8, 6, 0.7);
+            padding: 1.5rem;
+            border-radius: 0;
+            text-align: center;
+            letter-spacing: 3px;
+            margin: 2rem 0;
+            border: 1px solid #3a2c1a;
+            color: #c4a76a;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(196, 167, 106, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .instructions {
+            background: rgba(20, 16, 12, 0.7);
+            padding: 1.5rem;
+            border-left: 3px solid #8b6b3d;
+            font-size: 1rem;
+            line-height: 1.6;
+            border-top: 1px solid #3a2c1a;
+            border-bottom: 1px solid #3a2c1a;
+        }
+
+        .rejection-message {
+            font-style: italic;
+            color: #a08c6c;
+            text-align: center;
+            padding: 3rem 1rem;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #5c451f;
+            padding-top: 1.5rem;
+            border-top: 1px solid #3a2c1a;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .input-container {
+                flex-direction: column;
+            }
+            
+            .scan-button {
+                width: 100%;
+            }
+            
+            .terminal-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .help-popup {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .help-content {
+                width: 280px;
+            }
+        }
+
+        /* Twitter Handler */
+.twitter-handler {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(20, 16, 12, 0.8);
+    border: 1px solid #1da1f2;
+    color: #1da1f2;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    text-decoration: none;
+    width: fit-content;
+}
+
+.twitter-handler:hover {
+    background: rgba(29, 161, 242, 0.1);
+    box-shadow: 0 0 10px rgba(29, 161, 242, 0.4);
+}
+
+.twitter-handler i {
+    font-size: 1rem;
+}
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    
+    <!-- Help Popup -->
+<!-- Help Popup -->
+<div class="help-popup">
+    <button class="help-button">
+        <i class="fas fa-question-circle"></i> How This Works
+    </button>
+    <a href="https://twitter.com/WalletBazaar" target="_blank" class="twitter-handler">
+        <i class="fab fa-twitter"></i> @WalletBazaar
+    </a>
+    <div class="help-content">
+        <button class="help-close">
+            <i class="fas fa-times"></i>
+        </button>
+        <h3>Wallet Bazaar Process</h3>
+        <p>Welcome to the underground marketplace where wallets are evaluated for trade.</p>
+        <ul>
+            <li><strong>Step 1:</strong> Enter your wallet address in the verification machine</li>
+            <li><strong>Step 2:</strong> The system scans your wallet's transaction history and patterns</li>
+            <li><strong>Step 3:</strong> If approved, you'll receive a unique trade code</li>
+            <li><strong>Step 4:</strong> DM the code to our Twitter with your wallet to claim tokens</li>
+        </ul>
+        <p><em>Note: Not all wallets meet our obscure criteria. The machine's decisions are final.</em></p>
+    </div>
+</div>
+    
+    <div class="container">
+        <div class="logo">
+            <!-- Logo will be loaded from logo.png -->
+        </div>
+        <header>
+            <!-- Header content -->
+        </header>
+        
+        <main>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-title">
+                        <i class="fas fa-terminal"></i>
+                        WALLET VERIFICATION MACHINE
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        SYSTEM ACTIVE - AWAITING INPUT
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <label class="input-label">INSERT WALLET ADDRESS FOR INSPECTION:</label>
+                    <div class="input-container">
+                        <input type="text" class="wallet-input" placeholder="ds43f1..." id="walletInput">
+                        <button class="scan-button" id="scanButton">
+                            <i class="fas fa-search"></i> INITIATE SCAN
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="output-section" id="outputSection">
+                    <div class="scanning-animation" id="scanningAnimation">
+                        <i class="fas fa-cog fa-spin" style="font-size: 2.5rem; margin-bottom: 2rem; color: #8b6b3d;"></i>
+                        <p>SCANNING WALLET CONTENTS...</p>
+                        <div class="scan-line"></div>
+                        <p>ANALYZING TRANSACTION HISTORY...</p>
+                        <div class="scan-line"></div>
+                        <p>ASSESSING WALLET WORTH...</p>
+                    </div>
+                    
+                    <div class="result approved" id="approvedResult">
+                        <div class="result-header">
+                            <i class="fas fa-check-circle"></i>
+                            WALLET APPROVED FOR TRADE
+                        </div>
+                        <div class="result-content">
+                            <p>The machine hums approvingly. This wallet meets the Bazaar's obscure criteria.</p>
+                            <div class="code" id="tradeCode">WB-7X9P-2R4Q</div>
+                            <div class="instructions">
+                                <p><strong>TRADE INSTRUCTIONS:</strong> Direct message this code to our Twitter account along with your wallet address to receive your token reward. Do not share this code with anyone.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result rejected" id="rejectedResult">
+                        <div class="result-header">
+                            <i class="fas fa-times-circle"></i>
+                            WALLET REJECTED
+                        </div>
+                        <div class="result-content">
+                            <p class="rejection-message" id="rejectionMessage">
+                                The machine emits a low hum, then falls silent. The screen displays no further information.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const walletInput = document.getElementById('walletInput');
+            const scanButton = document.getElementById('scanButton');
+            const outputSection = document.getElementById('outputSection');
+            const scanningAnimation = document.getElementById('scanningAnimation');
+            const approvedResult = document.getElementById('approvedResult');
+            const rejectedResult = document.getElementById('rejectedResult');
+            const tradeCode = document.getElementById('tradeCode');
+            const rejectionMessage = document.getElementById('rejectionMessage');
+            
+            // Help popup functionality
+            const helpButton = document.querySelector('.help-button');
+            const helpContent = document.querySelector('.help-content');
+            const helpClose = document.querySelector('.help-close');
+            
+            helpButton.addEventListener('click', function() {
+                helpContent.style.display = helpContent.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            helpClose.addEventListener('click', function() {
+                helpContent.style.display = 'none';
+            });
+            
+            // Close help when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.help-popup')) {
+                    helpContent.style.display = 'none';
+                }
+            });
+            
+            // Rejection messages for variety
+            const rejectionMessages = [
+                "The machine emits a low hum, then falls silent. The screen displays no further information.",
+                "A series of clicks, then darkness. The terminal reboots as if nothing happened.",
+                "The screen flickers briefly: PATTERN RECOGNITION FAILED. TRY ANOTHER WALLET.",
+                "ERROR 734: WALLET FINGERPRINT DOES NOT MATCH BAZAAR PARAMETERS.",
+                "The terminal displays a single word: INADEQUATE. Then returns to standby mode.",
+                "A brief flash of text: CONNECTION TERMINATED. NO FURTHER ACTION REQUIRED.",
+                "The machine whirrs quietly, processing your submission before displaying: NOT ACCEPTABLE.",
+                "A soft chime sounds, followed by the message: VERIFICATION FAILED. TRY AGAIN LATER."
+            ];
+            
+            // Generate a random trade code
+            function generateTradeCode() {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let code = 'WB-';
+                for (let i = 0; i < 8; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                    if (i === 3) code += '-';
+                }
+                return code;
+            }
+            
+            // Simulate wallet scanning
+            scanButton.addEventListener('click', function() {
+                const walletAddress = walletInput.value.trim();
+                
+                if (!walletAddress) {
+                    alert("Please enter a wallet address to scan.");
+                    return;
+                }
+                
+                // Show scanning animation
+                scanningAnimation.style.display = 'block';
+                approvedResult.style.display = 'none';
+                rejectedResult.style.display = 'none';
+                
+                // Simulate scanning process
+                setTimeout(function() {
+                    scanningAnimation.style.display = 'none';
+                    
+                    // Randomly approve or reject (65% chance of approval for demo)
+                    const isApproved = Math.random() > 0.35;
+                    
+                    if (isApproved) {
+                        tradeCode.textContent = generateTradeCode();
+                        approvedResult.style.display = 'block';
+                    } else {
+                        // Select a random rejection message
+                        rejectionMessage.textContent = rejectionMessages[
+                            Math.floor(Math.random() * rejectionMessages.length)
+                        ];
+                        rejectedResult.style.display = 'block';
+                    }
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>
